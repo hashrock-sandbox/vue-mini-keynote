@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="bower_components/vue/dist/vue.js"></script>
+    <script src="bower_components/superagent/superagent.js"></script>
+    <style>
+        h1{
+            text-align: center;
+        }
+        p{
+            text-align: right;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+
+<div id="main">
+    <p>
+        <button v-on="click: page--" v-attr="disabled: page===0"><<</button>
+        page {{page}} / {{messages.length - 1}}
+        <button v-on="click: page++" v-attr="disabled: page===messages.length - 1">>></button>
+    </p>
+    <h1 style="font-size: {{message.size}}rem">{{{message.text}}}</h1>
+</div>
+
+<script>
+    var request = window.superagent;
+    new Vue({
+        el:"#main",
+        computed: {
+            message : function(){
+                return this.messages[this.page];
+            }
+        },
+        data:{
+            messages: [{text: "loading..."}],
+            page: 0
+        },
+        ready:function(){
+            var self = this;
+            request
+                .get("https://script.google.com/macros/s/AKfycbyoKmXf1w5DFoH0VlAXmCt0aggW3Q2x5ng7jK8iKajtoX9i4UA/exec")
+                .end(function(res){
+                    self.messages = res.body;
+                });
+        }
+    });
+
+</script>
+</body>
+</html>
